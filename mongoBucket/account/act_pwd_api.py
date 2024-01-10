@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from .mongo import mongoDB
+from mongo import mongoDB
 from datetime import datetime
 import json
 import re

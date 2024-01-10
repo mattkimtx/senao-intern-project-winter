@@ -1,0 +1,54 @@
+{% load static %}
+<head>
+    <title>Query FM Models and Types</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'selectApp/style.css' %}">
+</head>
+
+<header>
+    <h1>Models (String), Types, and Time</h1>
+</header>
+
+<form action="/selectApp/query/" method="get">
+
+    {% csrf_token %}
+    <label for="modelStr">Input Model String</label>
+        <input type="text" id="searchBar" name='q' placeholder="Model String...">
+        {% if no_input %}
+            <h2><strong>{{ no_input }}</strong></h2>
+        {% endif %}
+    <br><br>
+
+    <label for="sortType">Select Type</label>
+        <select id="sortType" name="sortType">
+            <option value="none">none selected</option>
+            <option value="alpha">alpha</option>
+            <option value="beta">beta</option>
+            <option value="release">release</option>
+        </select>
+    <br><br>
+
+    <label for="sortTime">Sort by Time</label>
+        <select id="sortTime" name="sortTime">
+            <option value="none">none selected</option>
+            <option value="ctasc">create time asc</option>
+            <option value="ctdec">create time dec</option>
+            <option value="mtasc">modified time asc</option>
+            <option value="mtdec">modified time dec</option>
+        </select>
+        <br><br>
+        
+    <button type="submit"> Query </button>
+</form>
+
+{% block content %}
+{% if all_data %}
+    <ul>
+    {% for data in all_data %}
+        <p>{{ data }}</p>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Firmware Selected...</p>
+{% endif %}
+</div>
+{% endblock %}

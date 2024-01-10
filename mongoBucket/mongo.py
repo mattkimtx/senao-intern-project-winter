@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import timedelta
-from .bcrypt import hash_password, verify_password
+from bcrypt import hash_password, verify_password
+from datetime import datetime
 import os
 
 load_dotenv()
@@ -76,3 +77,36 @@ class mongoDB:
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
           user_col = self.db.get_collection(COLLECTION_NAME)
           user_col.delete_one({"user": username})
+
+
+def cleanOutput(input):
+     # rmchar = "{}''"
+     # transTable= str.maketrans('', '', rmchar)
+     # newStr = input.translate(transTable)
+
+     # parts = newStr.split(',', 2) # split into 3 (model, type, times)
+
+     # # removing "type" and "model"
+     # type_final = parts[0].replace("type: ", "")
+     # model_final = parts[1].replace("model: ", "")
+
+     # #editing datetime
+     # input_time = parts[2]
+     # # Split the string based on the pattern
+     # time_parts = input_time.split("'modified_time': datetime.datetime")
+     # created = time_parts[0]
+     # created_final = created.replace("'created_time': ", "")
+     # modified_final = "datetime.datetime" + time_parts[1] # don't need to replace because I already split it out
+
+     # time_value_created = created_final.strftime("%Y-%m-%d %H:%M:%S")
+     # time_value_modified = modified_final.strftime("%Y-%m-%d %H:%M:%S")
+
+     # # creating dictionary
+     # output = {
+     #      "model": type_final,
+     #      "type": model_final,
+     #      "created_time": time_value_created,
+     #      "modified_time": time_value_modified
+     # }
+
+     return output

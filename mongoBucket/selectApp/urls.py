@@ -3,5 +3,6 @@ from . import views
 
 app_name = "selectApp"
 urlpatterns = [
-    #  path("login/", views.login, name="login"),
+    path("", views.index, name="index"),
+    path("query/", views.query, name="query"),
 ]
