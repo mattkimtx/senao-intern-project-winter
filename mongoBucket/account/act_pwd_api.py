@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from mongo import mongoDB
 from datetime import datetime
+from .convert_WGSI import convert_to_json_post
 import json
 import re
 
@@ -13,7 +14,12 @@ def user_signup(request):
           # HTTP Method
           if request.method == 'POST':    
                try:
-                    data = json.loads(request.body.decode('utf-8'))
+                    print("hi")
+                    converted = convert_to_json_post(request)
+                    print(converted)
+                    data = json.loads(converted.content)
+                    # data = json.loads(request.body.decode('utf-8'))
+                    print(data)
                     username = data['username']
                     password = data['password']
                except KeyError:

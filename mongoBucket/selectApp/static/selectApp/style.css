@@ -1,0 +1,12 @@
+/* Style for the grid container */
+.grid-container {
+     display: grid;
+     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust column width as needed */
+     gap: 10px; /* Adjust gap between items as needed */
+ }
+
+ /* Style for each grid item */
+ .grid-item {
+     border: 1px solid #ddd; /* Optional: Add borders for styling */
+     padding: 10px;
+ }

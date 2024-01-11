@@ -5,50 +5,94 @@
 </head>
 
 <header>
-    <h1>Models (String), Types, and Time</h1>
+    <h1>Query Firmware (Models, Types, and Time) </h1>
 </header>
 
-<form action="/selectApp/query/" method="get">
+<style>
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2; /* Header background color */
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2; /* Even rows background color */
+    }
+
+    tr:nth-child(odd) {
+        background-color: #ffffff; /* Odd rows background color */
+    }
+</style>
+
+
+<!-- Beginning of the form, includes a searchbox and two dropdown boxes -->
+<form action="/selectApp/query/" method="GET">
 
     {% csrf_token %}
     <label for="modelStr">Input Model String</label>
-        <input type="text" id="searchBar" name='q' placeholder="Model String...">
+        <input type="text" id="searchBar" name='q' placeholder="Model String..." value="{{ query }}">
         {% if no_input %}
             <h2><strong>{{ no_input }}</strong></h2>
         {% endif %}
     <br><br>
 
+    <!-- Here is to save the type information selected after you reload the page -->
     <label for="sortType">Select Type</label>
         <select id="sortType" name="sortType">
-            <option value="none">none selected</option>
-            <option value="alpha">alpha</option>
-            <option value="beta">beta</option>
-            <option value="release">release</option>
+            <option value="none" {% if type == 'none' %}selected{% endif %}>none selected</option>
+            <option value="alpha" {% if type == 'alpha' %}selected{% endif %}>alpha</option>
+            <option value="beta" {% if type == 'beta' %}selected{% endif %}>beta</option>
+            <option value="release" {% if type == 'release' %}selected{% endif %}>release</option>type
         </select>
     <br><br>
-
+    <!-- Here is to save the time information selected after you reload the page -->
     <label for="sortTime">Sort by Time</label>
         <select id="sortTime" name="sortTime">
-            <option value="none">none selected</option>
-            <option value="ctasc">create time asc</option>
-            <option value="ctdec">create time dec</option>
-            <option value="mtasc">modified time asc</option>
-            <option value="mtdec">modified time dec</option>
+            <option value="none" {% if time == 'none' %}selected{% endif %}>none selected</option>
+            <option value="ctasc" {% if time == 'ctasc' %}selected{% endif %}>create time asc</option>
+            <option value="ctdec" {% if time == 'ctdec' %}selected{% endif %}>create time dec</option>
+            <option value="mtasc" {% if time == 'mtasc' %}selected{% endif %}>modified time asc</option>
+            <option value="mtdec" {% if time == 'mtdec' %}selected{% endif %}>modified time dec</option>
         </select>
         <br><br>
-        
+
     <button type="submit"> Query </button>
 </form>
 
 {% block content %}
-{% if all_data %}
-    <ul>
-    {% for data in all_data %}
-        <p>{{ data }}</p>
-    {% endfor %}
-    </ul>
+{% if list %}
+<!-- Creating a table that houses all of the firmware that is queried. -->
+    <table>
+        <thead>
+            <tr>
+                <!-- Headers for each category -->
+                <th>Model</th>
+                <th>Type</th>
+                <th>Created Time</th>
+                <th>Modified Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- body of table, this is a loop of the list of lists that store the values of the queried firmwares. -->
+            {% for item in list %}
+            <tr>
+                {% for doc in item %}
+                <td>{{ doc }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% else %}
     <p>No Firmware Selected...</p>
 {% endif %}
-</div>
 {% endblock %}

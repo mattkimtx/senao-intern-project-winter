@@ -80,33 +80,15 @@ class mongoDB:
 
 
 def cleanOutput(input):
-     # rmchar = "{}''"
-     # transTable= str.maketrans('', '', rmchar)
-     # newStr = input.translate(transTable)
+     type = input["type"]
+     model = input["model"]
+     created_time = input["created_time"]
+     modified_time = input["modified_time"]
 
-     # parts = newStr.split(',', 2) # split into 3 (model, type, times)
+     # output = ""
+     # output = model + "\t" + type + "\t" + created_time + "\t" + modified_time
 
-     # # removing "type" and "model"
-     # type_final = parts[0].replace("type: ", "")
-     # model_final = parts[1].replace("model: ", "")
-
-     # #editing datetime
-     # input_time = parts[2]
-     # # Split the string based on the pattern
-     # time_parts = input_time.split("'modified_time': datetime.datetime")
-     # created = time_parts[0]
-     # created_final = created.replace("'created_time': ", "")
-     # modified_final = "datetime.datetime" + time_parts[1] # don't need to replace because I already split it out
-
-     # time_value_created = created_final.strftime("%Y-%m-%d %H:%M:%S")
-     # time_value_modified = modified_final.strftime("%Y-%m-%d %H:%M:%S")
-
-     # # creating dictionary
-     # output = {
-     #      "model": type_final,
-     #      "type": model_final,
-     #      "created_time": time_value_created,
-     #      "modified_time": time_value_modified
-     # }
+     # attempting to return a list instead of a string to make columns
+     output = [model, type, created_time, modified_time]
 
      return output
