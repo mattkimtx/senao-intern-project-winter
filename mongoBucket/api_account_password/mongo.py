@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import timedelta
-from hash_password import hash_password, verify_password
+from .hash_password import hash_password, verify_password
 from datetime import datetime
 import os
 
