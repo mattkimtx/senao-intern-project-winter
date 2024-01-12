@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import Http404
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from mongo import cleanOutput
+from api_account_password.mongo import cleanOutput
 import os
 
 load_dotenv
