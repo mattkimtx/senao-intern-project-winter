@@ -6,6 +6,7 @@
 
 <header>
     <h1>Signup</h1>
+    <a href="/" class="redirect-button">home</a>
     <h3> Please input username and password
 </header>
 
@@ -13,10 +14,10 @@
 <form action="/signup/signup_attempt/" method="post">
      {% csrf_token %}
      <label for="username">Username</label>
-          <input type="text" id="username" name='username' placeholder="john">
+          <input type="text" id="username" name='username' placeholder="enter...">
           <br><br>
      <label for="password">Password</label>
-          <input type="text" id="password" name='password' placeholder="1234">
+          <input type="text" id="password" name='password' placeholder="enter...">
           <br><br>
      <input type="submit" value="Submit">
 </form>

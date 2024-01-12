@@ -6,6 +6,7 @@
 
 <header>
     <h1>Login</h1>
+    <a href="/" class="redirect-button">home</a>
     <h3> Please input username and password
 </header>
 
@@ -22,7 +23,7 @@
 </form>
 
 <!-- Shows error message and will prompt the user to signup if failed -->
-{% if error %}
+{% if error and error != "none" %}
      <p> {{ error }} </p>
      <a href="/signup/" class="redirect-button">Signup</a>
 {% endif %}

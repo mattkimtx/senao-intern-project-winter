@@ -8,6 +8,7 @@ import os
 load_dotenv
 
 def index(request):
+     # verify the user has logged in
      return render(request, 'selectApp/index.html')
 
 # Create your views here.
@@ -40,8 +41,19 @@ def query(request):
                # this is to sort the data by time and also limit data to certain qualities.
                if type and time == "none":
                     query_result = collection.find({"model": model}, fields)
-               elif type != "none selected" and time == "none selected":
+               # type selected but not time, so show all of the times sorted by type
+               elif type != "none" and time == "none":
                     query_result = collection.find({"model": model, "type": type}, fields)
+               # time selected but not type, so show all of the types sorted by time
+               elif type == "none" and time != "none":
+                    if time == "ctasc":
+                         query_result = collection.find({"model": model}, fields).sort("created_time", 1)
+                    if time == "ctdec":
+                         query_result = collection.find({"model": model}, fields).sort("created_time", -1)
+                    if time == "mtasc":
+                         query_result = collection.find({"model": model}, fields).sort("modified_time", 1)
+                    if time == "mtdec":
+                         query_result = collection.find({"model": model}, fields).sort("modified_time", -1)
                else:  # all are selected, so we must sort by time
                     if time == "ctasc":
                          query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", 1) # sorting created_time by ascending
