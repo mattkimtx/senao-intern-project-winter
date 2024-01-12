@@ -8,6 +8,7 @@ import os
 load_dotenv
 
 def index(request):
+     # verify the user has logged in
      return render(request, 'selectApp/index.html')
 
 # Create your views here.
@@ -25,6 +26,7 @@ def query(request):
                dbName = os.environ.get("MONGO_DB_NAME")
                colName = os.environ.get("MONGO_COLLECTION_FW")
 
+               # select fields from MongoDB to be returned
                fields = {
                     "_id": 0,
                     "model": 1,
@@ -35,27 +37,42 @@ def query(request):
 
                db = client[dbName]
                collection = db[colName]
-               print(collection)
-               all_data = collection.find({"model": model}, fields)
-               print(1)
+               
+               # this is to sort the data by time and also limit data to certain qualities.
                if type and time == "none":
-                    all_data = collection.find({"model": model}, fields)
-               elif type != "none selected" and time == "none selected":
-                    all_data = collection.find({"model": model, "type": type}, fields)
+                    query_result = collection.find({"model": model}, fields)
+               # type selected but not time, so show all of the times sorted by type
+               elif type != "none" and time == "none":
+                    query_result = collection.find({"model": model, "type": type}, fields)
+               # time selected but not type, so show all of the types sorted by time
+               elif type == "none" and time != "none":
+                    if time == "ctasc":
+                         query_result = collection.find({"model": model}, fields).sort("created_time", 1)
+                    if time == "ctdec":
+                         query_result = collection.find({"model": model}, fields).sort("created_time", -1)
+                    if time == "mtasc":
+                         query_result = collection.find({"model": model}, fields).sort("modified_time", 1)
+                    if time == "mtdec":
+                         query_result = collection.find({"model": model}, fields).sort("modified_time", -1)
                else:  # all are selected, so we must sort by time
                     if time == "ctasc":
-                         all_data = collection.find({"model": model, "type": type}, fields).sort("created_time", 1) # sorting created_time by ascending
+                         query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", 1) # sorting created_time by ascending
                     if time == "ctdec":
-                         all_data = collection.find({"model": model, "type": type}, fields).sort("created_time", -1)
+                         query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", -1)
                     if time == "mtasc":
-                         all_data = collection.find({"model": model, "type": type}, fields).sort("modified_time", 1)
+                         query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", 1)
                     if time == "mtdec":
-                         all_data = collection.find({"model": model, "type": type}, fields).sort("modified_time", -1)
+                         query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", -1)
 
-               
+               # turn collection dictionary into list that is easier to read
+               list = []
+               for x in query_result:
+                    converted_data = cleanOutput(x)
+                    list.append(converted_data)
+               all_data = {'list': list, 'query': model, 'type': type, 'time': time}
 
                # Render the template with the data)
-               return render(request, 'selectApp/index.html', {'all_data': all_data})
+               return render(request, 'selectApp/index.html', all_data)
      
      except:
           # Handle exceptions (e.g., connection errors)

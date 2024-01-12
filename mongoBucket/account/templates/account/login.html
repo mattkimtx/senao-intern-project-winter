@@ -1,3 +1,29 @@
-<!DOCTYPE html>
+{% load static %}
+<head>
+    <title>login</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'account/style.css' %}">
+</head>
 
-<h1>hello</h1>
+<header>
+    <h1>Login</h1>
+    <a href="/" class="redirect-button">home</a>
+    <h3> Please input username and password
+</header>
+
+<!-- Username and Password form searchboxes -->
+<form action="/login/login_attempt/" method="get">
+     {% csrf_token %}
+     <label for="username">Username</label>
+          <input type="text" id="username" name='username' placeholder="john">
+          <br><br>
+     <label for="password">Password</label>
+          <input type="text" id="password" name='password' placeholder="1234">
+          <br><br>
+     <input type="submit" value="Submit">
+</form>
+
+<!-- Shows error message and will prompt the user to signup if failed -->
+{% if error and error != "none" %}
+     <p> {{ error }} </p>
+     <a href="/signup/" class="redirect-button">Signup</a>
+{% endif %}
