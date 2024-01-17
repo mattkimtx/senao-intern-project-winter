@@ -8,32 +8,6 @@
     <h1>Query Firmware (Models, Types, and Time) </h1>
 </header>
 
-<style>
-    table {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    th, td {
-        border: 1px solid #dddddd;
-        text-align: left;
-        padding: 8px;
-    }
-
-    th {
-        background-color: #f2f2f2; /* Header background color */
-    }
-
-    tr:nth-child(even) {
-        background-color: #f2f2f2; /* Even rows background color */
-    }
-
-    tr:nth-child(odd) {
-        background-color: #ffffff; /* Odd rows background color */
-    }
-</style>
-
-
 <!-- Beginning of the form, includes a searchbox and two dropdown boxes -->
 <form action="/selectApp/query/" method="GET">
 
@@ -75,19 +49,28 @@
         <thead>
             <tr>
                 <!-- Headers for each category -->
+                <th>ID</th>
                 <th>Model</th>
                 <th>Type</th>
+                <th>Platform</th>
                 <th>Created Time</th>
                 <th>Modified Time</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
             <!-- body of table, this is a loop of the list of lists that store the values of the queried firmwares. -->
             {% for item in list %}
             <tr>
-                {% for doc in item %}
-                <td>{{ doc }}</td>
-                {% endfor %}
+                <form action="/selectApp/query/delete/" method="POST">
+                    {% csrf_token %}
+                    {% for doc in item %}
+                    <td>{{ doc }}</td>
+                    <input type="hidden" name="item_data" value="{{ item }}">
+                    {% endfor %}
+                    <!-- Add Delete button -->
+                    <td><button class="delete-button">Delete</button></td>
+                </form>
             </tr>
             {% endfor %}
         </tbody>

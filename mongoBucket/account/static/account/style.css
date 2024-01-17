@@ -1,0 +1,56 @@
+/* style.css */
+
+/* Reset some default styles for better consistency */
+body, h1, h3, p {
+     margin: 0;
+     padding: 0;
+ }
+ 
+ body {
+     font-family: Arial, Helvetica, sans-serif;
+     background-color: #f2f2f2;
+     text-align: center;
+ }
+ 
+ header {
+     background-color: #333;
+     color: #fff;
+     padding: 20px ;
+ }
+ 
+ h1 {
+     font-size: 36px;
+     margin-bottom: 10px;
+ }
+ 
+ h3 {
+     font-size: 24px;
+     margin-bottom: 20px;
+ }
+ 
+ .redirect-button {
+     display: inline-block;
+     background-color: #007bff;
+     color: #fff;
+     text-decoration: none;
+     padding: 10px 20px;
+     margin: 10px;
+     border-radius: 5px;
+ }
+
+ /* Style the text input fields */
+input[type="text"] {
+     width: 10%;
+     padding: 10px;
+     margin-bottom: 5px;
+     margin-top: 15px;
+     border: 1px solid #ccc;
+     border-radius: 5px;
+     background-color: #f8f8f8;
+     transition: border-color 0.3s;
+ }
+ 
+ input[type="text"]:focus {
+     border-color: #007bff;
+     outline: none;
+ }
