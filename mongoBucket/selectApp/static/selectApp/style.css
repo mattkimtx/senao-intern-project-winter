@@ -23,7 +23,7 @@ tr:nth-child(odd) {
 
 .delete-button {
     background-color: #ff0000; /* Red background color */
-    color: #fff; /* White text color */
+    
     border: none;
     padding: 5px 10px;
     cursor: pointer;

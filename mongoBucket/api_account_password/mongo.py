@@ -2,13 +2,11 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import timedelta
 from .hash_password import hash_password, verify_password
-from datetime import datetime
-from bson import ObjectId
 import os
 
 load_dotenv()
 
-# Create a connection with the MongoDB database
+# Create a connection with the MongoDB database for use in account creation and login
 class mongoDB:
      def __init__(self):
           secret = os.environ.get("CONNECTION_STRING")
@@ -32,63 +30,7 @@ class mongoDB:
                return False
           else:
                return True
-          
-     def get_doc_with_id(self, id):
-          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_FW")
-          fw_col = self.db.get_collection(COLLECTION_NAME)
-          fields = {
-               "_id": 1,
-               "platform": 1,
-               "version": 1,
-               "is_latest": 1,
-               "is_previous": 1,
-               "file_key": 1,
-               "model": 1,
-               "type": 1,
-               "created_time": 1,
-               "modified_time": 1,
-          }
-          # make ID back into a BSON file
-          document_id = ObjectId(id)
-          # find the document
-          fw_doc = fw_col.find_one({"_id": document_id}, fields)
-          # check if doc exists and the file key exists
-          if fw_doc and "file_key" in fw_doc:
-               return fw_doc
-          else:
-               print("document not found or id incorrect")
-               return None
-     
-     def get_model_with_id(self, id):
-          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_FW")
-          fw_col = self.db.get_collection(COLLECTION_NAME)
-          fields = {
-               "_id": 1,
-               "model": 1,
-          }
-          # make ID back into a BSON file
-          document_id = ObjectId(id)
-          # find the document
-          fw_doc = fw_col.find_one({"_id": document_id}, fields)
-          # check if doc exists and the file key exists
-          if fw_doc and "model" in fw_doc:
-               model = str(fw_doc["model"])
-               return model
-          else:
-               print("document not found or id incorrect")
-               return None
-          
-     def delete_with_id(self, id):
-          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_FW")
-          fw_col = self.db.get_collection(COLLECTION_NAME)
-          # make ID back into a BSON file
-          document_id = ObjectId(id)
-          try:
-               fw_col.delete_one({"_id": document_id})
-               return True
-          except:
-               return False
-          
+  
      # checks to see if the hashed password exists in the database
      def password_exists(self, username, password):
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
@@ -134,17 +76,3 @@ class mongoDB:
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
           user_col = self.db.get_collection(COLLECTION_NAME)
           user_col.delete_one({"user": username})
-
-
-def cleanOutput(input):
-     id = input["_id"]
-     type = input["type"]
-     model = input["model"]
-     platform = input["platform"]
-     created_time = input["created_time"]
-     modified_time = input["modified_time"]
-
-     # attempting to return a list instead of a string to make columns
-     output = [id, model, type, platform, created_time, modified_time]
-
-     return output

@@ -1,8 +1,7 @@
 from dotenv import load_dotenv
 from pymongo import MongoClient
-from api_account_password.mongo import cleanOutput, mongoDB
+from .mongoHelper import mongoHelper, cleanOutput
 import S3Bucket.bucket
-import api_account_password.mongo
 import os
 
 load_dotenv
@@ -88,23 +87,21 @@ def query_sort(model, type, time):
 
      return all_data
 
-def query_delete(object_id, mdb):
-     # create objects to connect to S3
-     bucket = S3Bucket.bucket.Bucket()
+def query_delete(object_id, mdb, bucket):
 
      # variable to check if exists in bucket
      bucket_exist = False
-
      # getting mongoDB document from object_id using function in mongo.py
      document = mdb.get_doc_with_id(object_id)
      if document == None:
           print("document not found")
           return False
-
      file_key = str(document["file_key"])
+     model = str(document["model"])
+     fw_type = str(document["type"])
+     fw_platform = str(document["platform"])
      is_latest = document["is_latest"]
      is_previous = document["is_previous"]
-
      # cases for deleting files...
      ### does not exist in bucket
      try:
@@ -119,10 +116,9 @@ def query_delete(object_id, mdb):
                print("error deleting doc in mongoDB")
           # returning false bc objectdoes not exist in S3 bucket
           return False
-
      ### case for both False, can delete without modifying
      if is_latest == False and is_previous == False:
-          # delete file in bucket
+          # delete file in bucket (if it exists)
           if bucket_exist == True:
                bucket.delete_fk(file_key)
                print("file deleted from bucket")
@@ -133,17 +129,43 @@ def query_delete(object_id, mdb):
           mdb.delete_with_id(object_id)
           print("document deleted from mongoDB")
           return True
-     
      ### case for latest is true, need to set a new Firmware as "is_latest == True"
      elif is_latest == True and is_previous == False:
-          return False
-     
+           ### find documents that match model, type, and platform
+          sorted_fw = mdb.get_docs_from_model(model, fw_type, fw_platform, is_latest, is_previous)
+          if sorted_fw == None:
+               print("query_edit.py: no documents found")
+               return "error"
+          ### delete from bucket
+          if bucket_exist == True:
+               bucket.delete_fk(file_key)
+               print("file deleted from bucket")
+          else:
+               print("file not found in bucket")
+               return False
+          # # delete document in mongoDB
+          mdb.delete_with_id(object_id)
+          print("document deleted from mongoDB")
+          return True
+
      ### case for is previous is True, do not need to worry
      elif is_latest == False and is_previous == True:
-          return False
-     
-     ### case for both are True, need to set a new Firmware as "is_latest == True", otherwise this is the last firmware data for the model
-     elif is_latest == True and is_previous == True:
+          print(5)
+          sorted_fw = mdb.get_docs_from_model(model, fw_type, fw_platform, is_latest, is_previous) 
+          print("new", sorted_fw["version"])
+          if sorted_fw == None:
+               print("query_edit.py: no documents found")
+               return False
+          # ### delete from bucket
+          if bucket_exist == True:
+               bucket.delete_fk(file_key)
+               print("file deleted from bucket")
+          else:
+               print("file not found in bucket")
+               return False
+          # # delete document in mongoDB
+          mdb.delete_with_id(object_id)
+          print("document deleted from mongoDB")
           return True
      
      ### In case some other type of data besides "True" or "False" is read

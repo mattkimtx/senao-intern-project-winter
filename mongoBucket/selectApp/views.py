@@ -1,13 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-from dotenv import load_dotenv
 from .query_edit import query_sort, query_delete
-from api_account_password.mongo import cleanOutput, mongoDB
-import api_account_password.mongo
-import os
+from .mongoHelper import mongoHelper
+import S3Bucket.bucket
 
-load_dotenv
+
 
 def index(request):
      # verify the user has logged in
@@ -38,15 +36,19 @@ def delete(request):
                # remove "object_id" from the string
                object_id = object_id.replace("ObjectId('", "").replace("')", "")
                # using function from query_edit.py to delete the data from mongoDB and S3
-               mdb = api_account_password.mongo.mongoDB()
+               mdb = mongoHelper()
+               # create objects to connect to S3
+               bucket = S3Bucket.bucket.Bucket()
                # To return the model
                model = mdb.get_model_with_id(object_id)
-               result = query_delete(object_id, mdb)
+               result = query_delete(object_id, mdb, bucket)
                # query delete successfuly ran
                if result == True:
                     print("successful")
                     # print out all data again
                     all_data = query_sort("", "none", "none")
+                    # adding a success text for the main screen
+                    all_data["success"] = "Document deleted from MongoDB and S3."
                     return render(request, 'selectApp/index.html', all_data)
                if result == False:
                     print("successful, but S3 object does not exist")
@@ -54,6 +56,13 @@ def delete(request):
                     all_data = query_sort(model, "none", "none")
                     # add error message to all_data
                     all_data["no_input"] = "S3 object does not exist, but document deleted from MongoDB."
+                    return render(request, 'selectApp/index.html', all_data)
+               if result == "error":
+                    print("error, could not find document in mongoDB")
+                    # if model exists, display other models that exist
+                    all_data = query_sort(model, "none", "none")
+                    # add error message to all_data
+                    all_data["no_input"] = "Could not find document in MongoDB."
                     return render(request, 'selectApp/index.html', all_data)
           else:
                # Handle GET requests or other cases

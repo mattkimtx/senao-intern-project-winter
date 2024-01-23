@@ -66,4 +66,11 @@ Like logging in, the user must only input uppercase and lowercase letters and nu
 ## Query: Input/Output Format
 The model string textbox input must be a string, and the user can select any item from the selecting type or sorting by time dropdown boxes.
 
+### Assumptions
+- When decided to choose a new `is_previous` firmware version, we assume that we used the most recent firmware version. For example, if we were removing firmware version `v1.1`, we would find the closest previous version, `v1.0`, the new `is_previous` rather than another version such as `v0.5`.
+- We assume that the firmwares documents stored in MongoDB and in the S3 bucket do not have the following values: `is_previous` = `True` and `is_latest` = `True`.
+
 The output will be organized into seven columns where the first six columns represent fields, and each row represents one document. The last column contains the delete button for the document. If the user deletes a document, the page will refresh and display the remaining firmware versions of the same `model` name, and if there are no other matching `model` names remaining, there will be no output.
+
+### Potential Improvements
+In my code, there are a lot of opportunities for more clear variable naming and more clear coding overall. I think my selectApp/views.py represents what I want my code to look like, but the reality is represented in selectapp/query_edit.py. There, my query_sort and query_delete  has a lot of `if statements that I can turn into separate smaller functions. 
