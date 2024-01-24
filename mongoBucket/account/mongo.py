@@ -1,12 +1,12 @@
 from pymongo import MongoClient
 from dotenv import load_dotenv
 from datetime import timedelta
-from .hash_password import hash_password, verify_password
+from .bcrypt import hash_password, verify_password
 import os
 
 load_dotenv()
 
-# Create a connection with the MongoDB database for use in account creation and login
+# Create a connection with the MongoDB database
 class mongoDB:
      def __init__(self):
           secret = os.environ.get("CONNECTION_STRING")
@@ -21,13 +21,6 @@ class mongoDB:
      def close(self):
           self.client.close()
 
-     # gets account from database with username
-     def get_account(self, username):
-          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
-          user_col = self.db.get_collection(COLLECTION_NAME)
-          account = user_col.find_one({"user": username})
-          return account
-     
      # checks to see if the username exists in the database
      def user_exists(self, username):
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
@@ -37,7 +30,7 @@ class mongoDB:
                return False
           else:
                return True
-  
+          
      # checks to see if the hashed password exists in the database
      def password_exists(self, username, password):
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
