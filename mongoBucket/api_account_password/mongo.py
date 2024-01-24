@@ -21,6 +21,13 @@ class mongoDB:
      def close(self):
           self.client.close()
 
+     # gets account from database with username
+     def get_account(self, username):
+          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
+          user_col = self.db.get_collection(COLLECTION_NAME)
+          account = user_col.find_one({"user": username})
+          return account
+     
      # checks to see if the username exists in the database
      def user_exists(self, username):
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")

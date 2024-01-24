@@ -21,10 +21,8 @@
      <input type="submit" value="Submit">
 </form>
 
-<a href="/" class="redirect-button">home</a>
-
 <!-- Shows error message and will prompt the user to signup if failed -->
 {% if error and error != "none" %}
      <p> {{ error }} </p>
-     <a href="/signup/" class="redirect-button">Signup</a>
 {% endif %}
+<a href="/signup/" class="redirect-button">Signup</a>

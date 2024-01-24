@@ -1,7 +1,8 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.http import HttpResponse
+from django.contrib.auth import logout, login
 from api_account_password.act_pwd_api import user_login, user_signup
 import json
 
@@ -18,12 +19,9 @@ def signup_attempt(request):
 
     # two cases. 1st, login successful; 2nd, login failed
     if success == 'true':
-        return render(request, 'account/login.html', error)
+        return redirect('account/login.html')
     else:
         return render(request, 'account/signup.html', error)
-    
-def signup(request):
-    return render(request, 'account/signup.html')
     
 @csrf_exempt
 def login_attempt(request):
@@ -40,9 +38,17 @@ def login_attempt(request):
         return render(request, 'selectApp/index.html', error)
     else:
         return render(request, 'account/login.html', error)
+    
+def signup_view(request):
+    return render(request, 'account/signup.html')
 
-def login(request):
+def login_view(request):
     return render(request, 'account/login.html')
 
-def index(request):
+def index_view(request):
     return render(request, 'account/index.html')
+
+@csrf_exempt
+def logout_view(request):
+    logout(request)
+    return render(request, 'account/logout.html')
