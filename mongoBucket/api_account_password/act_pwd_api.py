@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from .mongo import mongoDB
 from datetime import datetime
+from django.contrib.auth import authenticate
 import json
 import re
 
@@ -13,9 +14,8 @@ def user_signup(request):
           # HTTP Method
           if request.method == 'POST':    
                try:
-                    data = json.loads(request.body.decode('utf-8'))
-                    username = data['username']
-                    password = data['password']
+                    username = request.POST.get('username', '')
+                    password = request.POST.get('password', '')
                except KeyError:
                     return JsonResponse({'success': 'false', 
                                          'error': 'username and password are required fields'}, status=400)
@@ -57,51 +57,23 @@ def user_signup(request):
      except Exception:
           return JsonResponse({'success': 'false', 
                                'error': 'an error occured'}, status=500)
-     
+
+# just need to create a new login function to incorporate Django authentication API
 def user_login(request):
-     try:
-          if request.method == 'GET':
-               try:
-                    data = json.loads(request.body.decode('utf-8'))
-                    username = data['username']
-                    password = data['password']
-               except KeyError:
-                    return JsonResponse({'success': 'false', 
-                                         'error': 'username and password are required fields'}, status=400)
-
-               # gets timestamp from the request
-               timestamp = datetime.now()
-
-               # Creates MongoDB object
-               users_db = mongoDB()
-
-               # verify login
-               if users_db.user_exists(username) == False: # if username doesn't exist
-                    users_db.close()
-                    return JsonResponse({'success': 'false', 
-                                         'error': 'Username does not exist'}, status=400)
-               else: # username exists
-                    # if logged in too many times
-                    if users_db.check_failed_login_attempts(username, timestamp) == False:
-                         # too many failed attempts
-                         users_db.close()
-                         return JsonResponse({'success': 'false', 
-                                              'error': 'Too many failed login attempts, please wait 1 minute until trying again'}, status=400)
-                    # successful login
-                    if users_db.password_exists(username, password):
-                         users_db.close()
-                         return JsonResponse({'success': 'true',
-                                              'error': 'none'}, status=200)
-                    # failed to login, will add another failed login to counter
-                    else:
-                         users_db.failed_login(username, timestamp)
-                         users_db.close()
-                         return JsonResponse({'success': 'false', 
-                                              'error': 'Invalid username or password'}, status=400)
+     if request.method == 'GET':
+          username = request.GET.get('username', '')
+          password = request.GET.get('password', '')
+          user = authenticate(request, username=username, password=password) 
+          # read json document to see if request was valid
+          read_json = json.loads(user.content)
+          success = read_json['success']
+          # authentication was successful   
+          if success == 'true':
+               return JsonResponse({'success': 'true',
+                                        'error': 'none'}, status=200)
+          # authentication failed, return json packet from authentication
           else:
-               return JsonResponse({'success': 'false', 
-                                    'error': 'invalid HTTP method'}, status=405)
-     
-     except Exception:
+               return user
+     else:
           return JsonResponse({'success': 'false', 
-                               'error': 'an error occured'}, status=500) 
+                               'error': 'invalid HTTP method'}, status=405)

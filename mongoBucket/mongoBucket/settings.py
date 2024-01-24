@@ -74,35 +74,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "mongoBucket.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
+# identifying the authentication backend
+AUTHENTICATION_BACKENDS = [
+    "account.backend.MyBackend",
 ]
+
+# setting Login URL where users will be redirected when they access a protected view
+LOGIN_URL = '/login/'
+
+# setting session expiry (time, closing, etc)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 300 # 5 minutes inactive
+SESSION_SAVE_EVERY_REQUEST = True
+
 
 
 # Internationalization
@@ -120,7 +104,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+# listing multiple static directories
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'account')] + [os.path.join(BASE_DIR, 'selectApp')]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
