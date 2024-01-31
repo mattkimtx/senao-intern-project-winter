@@ -126,9 +126,13 @@ def query_delete(object_id, mdb, bucket):
                print("file not found in bucket")
                return False
           # delete document in mongoDB
-          mdb.delete_with_id(object_id)
-          print("document deleted from mongoDB")
-          return True
+          # test if delete function works
+          if mdb.delete_with_id(object_id) == False:
+               print("2 or less firmware files found, cannot delete")
+               return False
+          else:
+               print("document deleted from mongoDB")
+               return True
      ### case for latest is true, need to set a new Firmware as "is_latest == True"
      elif is_latest == True and is_previous == False:
            ### find documents that match model, type, and platform
@@ -143,10 +147,14 @@ def query_delete(object_id, mdb, bucket):
           else:
                print("file not found in bucket")
                return False
-          # # delete document in mongoDB
-          mdb.delete_with_id(object_id)
-          print("document deleted from mongoDB")
-          return True
+          # delete document in mongoDB
+          # test if delete function works
+          if mdb.delete_with_id(object_id) == False:
+               print("2 or less firmware files found, cannot delete")
+               return False
+          else:
+               print("document deleted from mongoDB")
+               return True
 
      ### case for is previous is True, do not need to worry
      elif is_latest == False and is_previous == True:
@@ -163,11 +171,14 @@ def query_delete(object_id, mdb, bucket):
           else:
                print("file not found in bucket")
                return False
-          # # delete document in mongoDB
-          mdb.delete_with_id(object_id)
-          print("document deleted from mongoDB")
-          return True
-     
+          # delete document in mongoDB
+          # test if delete function works
+          if mdb.delete_with_id(object_id) == False:
+               print("2 or less firmware files found, cannot delete")
+               return False
+          else:
+               print("document deleted from mongoDB")
+               return True
      ### In case some other type of data besides "True" or "False" is read
      else:
           print("error deleting file")

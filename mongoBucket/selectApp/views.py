@@ -4,15 +4,16 @@ from django.http import Http404
 from django.contrib.auth.decorators import login_required
 from .query_edit import query_sort, query_delete
 from .mongoHelper import mongoHelper
+from api_account_password.act_pwd_api import custom_login_required
 import S3Bucket.bucket
 
 
-@login_required
+@custom_login_required
 def index(request):
      # verify the user has logged in
      return render(request, 'selectApp/index.html')
 
-@login_required
+@custom_login_required
 # query and sort FW data
 def query(request):
      try:
@@ -28,7 +29,7 @@ def query(request):
           # Handle exceptions (e.g., connection errors)
           raise Http404("No data found")
 
-@login_required
+@custom_login_required
 # delete firmware data
 def delete(request):
      try:

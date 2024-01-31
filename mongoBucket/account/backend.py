@@ -5,10 +5,9 @@ from api_account_password.mongo import mongoDB
 
 
 class MyBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None):
+    def authenticate(self, request, username=None, password=None, users_db=mongoDB()):
           # get timestamp from the request andc create MongoDB object
           timestamp = datetime.now()
-          users_db = mongoDB()
           # verify login
           if users_db.user_exists(username) == False: # if username doesn't exist
                return JsonResponse({'success': 'false', 
@@ -22,7 +21,7 @@ class MyBackend(BaseBackend):
                # successful login
                if users_db.password_exists(username, password):
                     return JsonResponse({'success': 'true',
-                                             'error': 'none'}, status=200)
+                                         'error': 'none'}, status=200)
                # failed to login, will add another failed login to counter
                else:
                     users_db.failed_login(username, timestamp)

@@ -131,11 +131,24 @@ class mongoHelper:
           fw_col = self.db.get_collection(COLLECTION_NAME)
           # make ID back into a BSON file
           document_id = ObjectId(id)
-          try:
-               fw_col.delete_one({"_id": document_id})
-               return True
-          except:
+
+          # check to make sure more than 2 documents exist for the same model, type, and platform
+          document = fw_col.find_one({"_id": document_id})
+          model = document["model"]
+          type = document["type"]
+          platform = document["platform"]
+          # count how many documents exist for the same model, type, and platform
+          count = fw_col.count_documents({"model": model, "type": type, "platform": platform})
+          # if there are only 2 documents, return "only two documents"
+          if count <= 2:
                return False
+          # if there are more than 2 documents, delete the document
+          else: 
+               try:
+                    fw_col.delete_one({"_id": document_id})
+                    return True
+               except:
+                    return False
           
 
 # creates a list that will be used to create a table on the index.html page
