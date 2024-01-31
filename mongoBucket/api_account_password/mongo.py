@@ -54,7 +54,7 @@ class mongoDB:
           COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_NAME")
           user_col = self.db.get_collection(COLLECTION_NAME)
           hash_pass = hash_password(password)
-          user_col.insert_one({"user": username, "password": hash_pass})
+          user_col.insert_one({"user": username, "password": hash_pass, "session_token": ""})
      
      # Counts failed login attempts
      def failed_login(self, username, timestamp):
@@ -71,7 +71,8 @@ class mongoDB:
           # Use the index to filter failed attempts within the last minute
           query = {
                "user": username,
-               "timestamp": {"$gt": timestamp - login_attempt_duration}
+               "timestamp": {"$gt": timestamp - login_attempt_duration},
+               "session_token": ""
           }
           count = fail_col.count_documents(query)
 

@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import Http404
-from django.contrib.auth.decorators import login_required
 from .query_edit import query_sort, query_delete
 from .mongoHelper import mongoHelper
 from api_account_password.act_pwd_api import custom_login_required
 import S3Bucket.bucket
+import time
 
 
 @custom_login_required
@@ -16,13 +16,16 @@ def index(request):
 @custom_login_required
 # query and sort FW data
 def query(request):
+     start_query = time.time()
      try:
           model = request.GET.get('q')
           type = request.GET.get('sortType')
-          time = request.GET.get('sortTime')
+          sortTime = request.GET.get('sortTime')
           # select fields from MongoDB to be returned
-          all_data = query_sort(model, type, time)
+          all_data = query_sort(model, type, sortTime)
           # Render the template with the data)
+          end_query = time.time()
+          print("query time: " + str(end_query - start_query))
           return render(request, 'selectApp/index.html', all_data)
      
      except:

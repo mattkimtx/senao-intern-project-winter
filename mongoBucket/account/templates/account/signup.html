@@ -25,5 +25,20 @@
 
 <!-- Shows error message and will prompt the user to signup if failed -->
 {% if error %}
-     <p> {{ error }} </p>
+<body>
+     <div id="popup" class="popup">
+          <div class="popup-content">
+               <span class="close" id="close-popup">&times;</span>
+               <h3>{{ error }}</h3>
+               <p>Please Try Again.</p>
+          </div>
+     </div>
+ 
+     <script src="{% static 'account/script.js' %}"></script>
+     <script>
+          window.onload = function() {
+               document.getElementById('popup').style.display = 'block';
+          }
+     </script>
+ </body>
 {% endif %}

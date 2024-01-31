@@ -26,22 +26,17 @@ def signup_attempt(request):
     
 # @csrf_exempt
 def login_attempt(request):
-    start_login = time.time()
     json_response = user_login(request)
     # convert into easy to read python dictionary
     read_json = json.loads(json_response.content)
     # read json document to see if request was valid
     success = read_json['success']
     error = {'error' : read_json['error']}
-    session_token = read_json['session_token']
-
-    response = render(request, 'selectApp/index.html', error)
-    response.set_cookie('session_token', value=session_token, path='/')
-
     # two cases. 1st, login successful; 2nd, login failed
     if success == 'true':
-        end_login = time.time()
-        print("user_login time: " + str(end_login - start_login))
+        session_token = read_json['session_token']
+        response = render(request, 'selectApp/index.html', error)
+        response.set_cookie('session_token', value=session_token, path='/')
         return response
     else:
         return render(request, 'account/login.html', error)

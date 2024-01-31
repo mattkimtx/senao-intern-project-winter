@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.collection import Collection
+from pymongo.cursor import Cursor
 from .mongoHelper import mongoHelper, cleanOutput
 import S3Bucket.bucket
 import os
@@ -7,12 +9,91 @@ import os
 load_dotenv
 
 def query_sort(model, type, time):
+     # secret = os.environ.get("connection_string")
+     # client = mongoclient(host=secret, directconnection=true)
+     # dbname = os.environ.get("mongo_db_name")
+     # colname = os.environ.get("mongo_collection_fw")
+
+     # # select fields from mongodb to be returned
+     # fields = {
+     #      "_id": 1,
+     #      "model": 1,
+     #      "type": 1,
+     #      "platform": 1,
+     #      "created_time": 1,
+     #      "modified_time": 1,
+     # }
+
+     # db = client[dbname]
+     # collection = db[colname]
+     
+     # # returns all data
+     # if type == "none" and time == "none" and model == "":
+     #      query_result = collection.find({}, fields)
+     # # this is to sort the data by time and also limit data to certain qualities.
+     # elif type == "none" and time == "none" and model != "":
+     #      query_result = collection.find({"model": model}, fields)
+     # # type selected but not time, so show all of the times sorted by type
+     # elif type != "none" and time == "none":
+     #      # if model is empty
+     #      if model == "":
+     #           query_result = collection.find({"type": type}, fields)
+     #      else:
+     #           query_result = collection.find({"model": model, "type": type}, fields)
+     # # time selected but not type, so show all of the types sorted by time
+     # elif type == "none" and time != "none":
+     #      if model == "":
+     #           if time == "ctasc":
+     #                query_result = collection.find({}, fields).sort("created_time", 1)    
+     #           if time == "ctdec":
+     #                query_result = collection.find({}, fields).sort("created_time", -1)
+     #           if time == "mtasc":
+     #                query_result = collection.find({}, fields).sort("modified_time", 1)
+     #           if time == "mtdec":
+     #                query_result = collection.find({}, fields).sort("modified_time", -1)
+     #      else:
+     #           if time == "ctasc":
+     #                query_result = collection.find({"model": model}, fields).sort("created_time", 1)
+     #           if time == "ctdec":
+     #                query_result = collection.find({"model": model}, fields).sort("created_time", -1)
+     #           if time == "mtasc":
+     #                query_result = collection.find({"model": model}, fields).sort("modified_time", 1)
+     #           if time == "mtdec":
+     #                query_result = collection.find({"model": model}, fields).sort("modified_time", -1)
+     # else:  # all are selected, so we must sort by time
+     #      if model == "":     
+     #           if time == "ctasc":
+     #                query_result = collection.find({"type": type}, fields).sort("created_time", 1)
+     #           if time == "ctdec":
+     #                query_result = collection.find({"type": type}, fields).sort("created_time", -1)
+     #           if time == "mtasc":
+     #                query_result = collection.find({"type": type}, fields).sort("modified_time", 1)
+     #           if time == "mtdec":
+     #                query_result = collection.find({"type": type}, fields).sort("modified_time", -1)
+     #      else:
+     #           if time == "ctasc":
+     #                query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", 1) # sorting created_time by ascending
+     #           if time == "ctdec":
+     #                query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", -1)
+     #           if time == "mtasc":
+     #                query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", 1)
+     #           if time == "mtdec":
+     #                query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", -1)
+
+     # # turn collection dictionary into list that is easier to read
+     # list = []
+     # for x in query_result:
+     #      converted_data = cleanoutput(x)
+     #      list.append(converted_data)
+     # all_data = {'list': list, 'query': model, 'type': type, 'time': time}
+
+     # return all_data
      secret = os.environ.get("CONNECTION_STRING")
      client = MongoClient(host=secret, directconnection=True)
      dbName = os.environ.get("MONGO_DB_NAME")
      colName = os.environ.get("MONGO_COLLECTION_FW")
 
-     # select fields from MongoDB to be returned
+     # Define the fields to be returned
      fields = {
           "_id": 1,
           "model": 1,
@@ -23,67 +104,31 @@ def query_sort(model, type, time):
      }
 
      db = client[dbName]
-     collection = db[colName]
-     
-     # returns all data
-     if type == "none" and time == "none" and model == "":
-          query_result = collection.find({}, fields)
-     # this is to sort the data by time and also limit data to certain qualities.
-     elif type == "none" and time == "none" and model != "":
-          query_result = collection.find({"model": model}, fields)
-     # type selected but not time, so show all of the times sorted by type
-     elif type != "none" and time == "none":
-          # if model is empty
-          if model == "":
-               query_result = collection.find({"type": type}, fields)
-          else:
-               query_result = collection.find({"model": model, "type": type}, fields)
-     # time selected but not type, so show all of the types sorted by time
-     elif type == "none" and time != "none":
-          if model == "":
-               if time == "ctasc":
-                    query_result = collection.find({}, fields).sort("created_time", 1)    
-               if time == "ctdec":
-                    query_result = collection.find({}, fields).sort("created_time", -1)
-               if time == "mtasc":
-                    query_result = collection.find({}, fields).sort("modified_time", 1)
-               if time == "mtdec":
-                    query_result = collection.find({}, fields).sort("modified_time", -1)
-          else:
-               if time == "ctasc":
-                    query_result = collection.find({"model": model}, fields).sort("created_time", 1)
-               if time == "ctdec":
-                    query_result = collection.find({"model": model}, fields).sort("created_time", -1)
-               if time == "mtasc":
-                    query_result = collection.find({"model": model}, fields).sort("modified_time", 1)
-               if time == "mtdec":
-                    query_result = collection.find({"model": model}, fields).sort("modified_time", -1)
-     else:  # all are selected, so we must sort by time
-          if model == "":     
-               if time == "ctasc":
-                    query_result = collection.find({"type": type}, fields).sort("created_time", 1)
-               if time == "ctdec":
-                    query_result = collection.find({"type": type}, fields).sort("created_time", -1)
-               if time == "mtasc":
-                    query_result = collection.find({"type": type}, fields).sort("modified_time", 1)
-               if time == "mtdec":
-                    query_result = collection.find({"type": type}, fields).sort("modified_time", -1)
-          else:
-               if time == "ctasc":
-                    query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", 1) # sorting created_time by ascending
-               if time == "ctdec":
-                    query_result = collection.find({"model": model, "type": type}, fields).sort("created_time", -1)
-               if time == "mtasc":
-                    query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", 1)
-               if time == "mtdec":
-                    query_result = collection.find({"model": model, "type": type}, fields).sort("modified_time", -1)
+     collection: Collection = db[colName]
 
-     # turn collection dictionary into list that is easier to read
-     list = []
-     for x in query_result:
-          converted_data = cleanOutput(x)
-          list.append(converted_data)
-     all_data = {'list': list, 'query': model, 'type': type, 'time': time}
+     # Define the filter criteria based on the input parameters
+     filter_criteria = {}
+
+     if model:
+          filter_criteria["model"] = model
+
+     if type != "none":
+          filter_criteria["type"] = type
+
+     if time != "none":
+          sort_field = "created_time" if time.startswith("ct") else "modified_time"
+          sort_order = 1 if time.endswith("asc") else -1
+
+          # Sort by the specified time field and order
+          query_result: Cursor = collection.find(filter_criteria, fields).sort(sort_field, sort_order)
+     else:
+          # No time-based sorting
+          query_result: Cursor = collection.find(filter_criteria, fields)
+
+     # Convert the cursor to a list of cleaned data
+     data_list = [cleanOutput(doc) for doc in query_result]
+
+     all_data = {'list': data_list, 'query': model, 'type': type, 'time': time}
 
      return all_data
 
