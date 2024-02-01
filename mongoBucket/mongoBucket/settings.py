@@ -103,13 +103,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 WSGI_APPLICATION = "mongoBucket.wsgi.application"
 
-# identifying the authentication backend
-AUTHENTICATION_BACKENDS = [
-    "account.backend.MyBackend",
-]
 
-# setting Login URL where users will be redirected when they access a protected view
-LOGIN_URL = '/login/'
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -126,9 +122,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "/static/"
-# listing multiple static directories
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'account')] + [os.path.join(BASE_DIR, 'selectApp')]
+STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
