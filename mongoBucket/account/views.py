@@ -20,7 +20,7 @@ def signup_attempt(request):
 
     # two cases. 1st, login successful; 2nd, login failed
     if success == 'true':
-        return redirect('account/login.html')
+        return render(request, 'account/login.html')
     else:
         return render(request, 'account/signup.html', error)
     

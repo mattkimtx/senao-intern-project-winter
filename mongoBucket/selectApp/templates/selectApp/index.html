@@ -17,14 +17,7 @@
     {% csrf_token %}
     <label for="modelStr">Input Model String</label>
         <input type="text" id="searchBar" name='q' placeholder="Model String..." value="{{ query }}">
-        {% if no_input %}
-            <h2><strong>{{ no_input }}</strong></h2>
-        {% endif %}
-        {% if success %}
-            <h2><strong>{{ success }}</strong></h2>
-        {% endif %}
     <br><br>
-
     <!-- Here is to save the type information selected after you reload the page -->
     <label for="sortType">Select Type</label>
         <select id="sortType" name="sortType">
@@ -85,3 +78,39 @@
     <p>No Firmware Selected...</p>
 {% endif %}
 {% endblock %}
+
+<!-- Pop ups -->
+{% if no_input %}
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" id="close-popup">&times;</span>
+            <h3>{{ no_input }}</h3>
+        </div>
+    </div>
+
+    <script src="{% static 'selectApp/script.js' %}"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById('popup').style.display = 'block';
+        }
+    </script>
+</body>
+{% endif %}
+{% if success %}
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" id="close-popup">&times;</span>
+            <h3>{{ success }}</h3>
+        </div>
+    </div>
+
+    <script src="{% static 'selectApp/script.js' %}"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById('popup').style.display = 'block';
+        }
+    </script>
+</body>
+{% endif %}

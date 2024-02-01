@@ -77,6 +77,8 @@ class mongoHelper:
           if is_latest == True and is_previous == False:
                previous_doc = fw_col.find_one({"model": model, "type": type, "platform": platform, "is_previous": True})
                
+               print(previous_doc)
+
                # check if there exists a previous version
                if previous_doc  == None:
                     print("mongo.py: no previous document found, returning None")
@@ -90,14 +92,14 @@ class mongoHelper:
                                                "type": type, 
                                                "platform": platform, 
                                                "is_previous": False, 
-                                               "is_latest": False}).sort("version", -1).limit(1)
+                                               "is_latest": False}).sort("created_time", -1).limit(1)
                
                # check if there exists a previous version
                if previous_doc_sort == None:
                     print("mongo.py: no new previous document found, returning None")
                     return None
-               previous_new_version_str = next(previous_doc_sort, None)["version"]
-               previous_doc_new = fw_col.find_one({"model": model, "type": type, "platform": platform, "version": previous_new_version_str})
+               previous_new_version_str = next(previous_doc_sort, None)["created_time"]
+               previous_doc_new = fw_col.find_one({"model": model, "type": type, "platform": platform, "created_time": previous_new_version_str})
                # update previous_doc_new to now be is_previous = True
                previous_doc_new["is_latest"] = False
                previous_doc_new["is_previous"] = True
@@ -110,14 +112,14 @@ class mongoHelper:
                                                "type": type, 
                                                "platform": platform, 
                                                "is_previous": False, 
-                                               "is_latest": False}).sort("version", 1).limit(1)
+                                               "is_latest": False}).sort("created_time", 1).limit(1)
               
                # check if there exists a previous version
                if version_recent == None:
                     print("mongo.py: no new previous document found, returning None")
                     return None
-               version_previous_new = next(version_recent, None)["version"]
-               previous_new = fw_col.find_one({"model": model, "type": type, "platform": platform, "version": version_previous_new})
+               version_previous_new = next(version_recent, None)["created_time"]
+               previous_new = fw_col.find_one({"model": model, "type": type, "platform": platform, "created_time": version_previous_new})
                # update new version of previous to is_previous = True
                previous_new["is_latest"] = False
                previous_new["is_previous"] = True
@@ -149,7 +151,28 @@ class mongoHelper:
                     return True
                except:
                     return False
-          
+
+     # counts how many documents exist for the same model, type, and platform           
+     def count_documents_func(self, id):
+          COLLECTION_NAME = os.environ.get("MONGO_COLLECTION_FW")
+          fw_col = self.db.get_collection(COLLECTION_NAME)
+          document_id = ObjectId(id)
+          # check to make sure more than 2 documents exist for the same model, type, and platform
+          document = fw_col.find_one({"_id": document_id})
+          print(101)
+
+          if document:
+               model = document["model"]
+               type = document["type"]
+               platform = document["platform"]
+               # count how many documents exist for the same model, type, and platform
+               count = fw_col.count_documents({"model": model, "type": type, "platform": platform})
+               print(count)
+               if count <= 2:
+                    return True
+               else:
+                    return False
+          return False
 
 # creates a list that will be used to create a table on the index.html page
 def cleanOutput(input):

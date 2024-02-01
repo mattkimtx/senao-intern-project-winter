@@ -16,7 +16,6 @@ def index(request):
 @custom_login_required
 # query and sort FW data
 def query(request):
-     start_query = time.time()
      try:
           model = request.GET.get('q')
           type = request.GET.get('sortType')
@@ -24,8 +23,6 @@ def query(request):
           # select fields from MongoDB to be returned
           all_data = query_sort(model, type, sortTime)
           # Render the template with the data)
-          end_query = time.time()
-          print("query time: " + str(end_query - start_query))
           return render(request, 'selectApp/index.html', all_data)
      
      except:
@@ -63,6 +60,13 @@ def delete(request):
                     all_data = query_sort(model, "none", "none")
                     # add error message to all_data
                     all_data["no_input"] = "S3 object does not exist, but document deleted from MongoDB."
+                    return render(request, 'selectApp/index.html', all_data)
+               if result == "few":
+                    print("INVALID: only 2 or less documents exist")
+                    # if model exists, display other models that exist
+                    all_data = query_sort(model, "none", "none")
+                    # add error message to all_data
+                    all_data["no_input"] = "INVALID: only 2 or less documents exist."
                     return render(request, 'selectApp/index.html', all_data)
                if result == "error":
                     print("error, could not find document in mongoDB")

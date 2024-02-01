@@ -14,6 +14,7 @@ import time
 def valid_password(password):
      return bool(re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)', password))
 
+# signup function
 def user_signup(request):
      try:
           # HTTP Method
@@ -104,7 +105,7 @@ def custom_login_required(view_func):
           if session_token and session_is_valid(session_token):
                return view_func(request, *args, **kwargs)
 
-          return HttpResponseForbidden("Access Denied")  # Return a forbidden response
+          return render(request, 'account/login.html')
 
      return _wrapped_view
 
@@ -113,25 +114,6 @@ def session_is_valid(session_token):
 
      # Check if the session token exists in the database
      return users_db.session_token_exists(session_token)
-
-# def custom_login_required(view_func):
-#      @wraps(view_func)
-#      def _wrapped_view(request, *args, **kwargs):
-#           session_token = request.COOKIES.get('session_token')
-#           if session_token and session_is_valid(session_token):  # Implement your session validation logic
-#                return view_func(request, *args, **kwargs)  # User is authenticated; proceed to the view
-        
-#           return render(request, 'account/login.html')  # JsonResponse({'message': 'Access Denied'}, status=401)
-    
-#      return _wrapped_view
-
-# def session_is_valid(session_token):
-#      users_db = mongoDB()
-#      # check if session token exists in database
-#      if users_db.session_token_exists(session_token):
-#           return True
-#      else:
-#           return False
      
 def user_logout(request):
      users_db = mongoDB()
