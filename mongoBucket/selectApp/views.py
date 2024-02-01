@@ -7,6 +7,7 @@ from api_account_password.act_pwd_api import custom_login_required
 import S3Bucket.bucket
 import time
 
+# Create your views here.
 
 @custom_login_required
 def index(request):
