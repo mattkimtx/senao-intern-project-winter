@@ -20,9 +20,8 @@ def user_signup(request):
           # HTTP Method
           if request.method == 'POST':    
                try:
-                    data = json.loads(request.body.decode('utf-8'))
-                    username = data['username']
-                    password = data['password']
+                    username = request.POST.get('username', '')
+                    password = request.POST.get('password', '')
                except KeyError:
                     return JsonResponse({'success': 'false', 
                                          'error': 'username and password are required fields'}, status=400)
@@ -64,17 +63,6 @@ def user_signup(request):
      except Exception:
           return JsonResponse({'success': 'false', 
                                'error': 'an error occured'}, status=500)
-     
-def user_login(request):
-     try:
-          if request.method == 'GET':
-               try:
-                    data = json.loads(request.body.decode('utf-8'))
-                    username = data['username']
-                    password = data['password']
-               except KeyError:
-                    return JsonResponse({'success': 'false', 
-                                         'error': 'username and password are required fields'}, status=400)
 
 # just need to create a new login function to incorporate Django authentication API
 def user_login(request):
@@ -103,10 +91,8 @@ def user_login(request):
                return response
           # authentication failed, return json packet from authentication
           else:
-               return JsonResponse({'success': 'false', 
-                                    'error': 'invalid HTTP method'}, status=405)
-     
-     except Exception:
+               return user
+     else:
           return JsonResponse({'success': 'false', 
                                'error': 'invalid HTTP method'}, status=405)
 

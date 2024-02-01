@@ -1,4 +1,5 @@
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.http import HttpResponse
 from api_account_password.act_pwd_api import user_login, user_signup, user_logout
@@ -7,9 +8,8 @@ import json
 import time
 
 @csrf_exempt
-def signup(request):
-    json_data = user_signup(request)
-    return json_data
+def signup_attempt(request):
+    json_response = user_signup(request)
 
     # convert into easy to read python dictionary
     read_json = json.loads(json_response.content)
