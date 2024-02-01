@@ -72,9 +72,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "mongoBucket.wsgi.application"
-
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -84,7 +81,6 @@ WSGI_APPLICATION = "mongoBucket.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -104,6 +100,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+WSGI_APPLICATION = "mongoBucket.wsgi.application"
+
+
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

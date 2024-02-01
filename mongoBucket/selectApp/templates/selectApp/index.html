@@ -1,0 +1,116 @@
+{% load static %}
+<head>
+    <title>Query FM Models and Types</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'selectApp/style.css' %}">
+</head>
+
+<header>
+    <h1>Query Firmware (Models, Types, and Time) </h1>
+</header>
+
+<!-- logout -->
+<a href="/logout/" class="redirect-button">Logout</a>
+
+<!-- Beginning of the form, includes a searchbox and two dropdown boxes -->
+<form action="/selectApp/query/" method="GET">
+
+    {% csrf_token %}
+    <label for="modelStr">Input Model String</label>
+        <input type="text" id="searchBar" name='q' placeholder="Model String..." value="{{ query }}">
+    <br><br>
+    <!-- Here is to save the type information selected after you reload the page -->
+    <label for="sortType">Select Type</label>
+        <select id="sortType" name="sortType">
+            <option value="none" {% if type == 'none' %}selected{% endif %}>none selected</option>
+            <option value="alpha" {% if type == 'alpha' %}selected{% endif %}>alpha</option>
+            <option value="beta" {% if type == 'beta' %}selected{% endif %}>beta</option>
+            <option value="release" {% if type == 'release' %}selected{% endif %}>release</option>type
+        </select>
+    <br><br>
+    <!-- Here is to save the time information selected after you reload the page -->
+    <label for="sortTime">Sort by Time</label>
+        <select id="sortTime" name="sortTime">
+            <option value="none" {% if time == 'none' %}selected{% endif %}>none selected</option>
+            <option value="ctasc" {% if time == 'ctasc' %}selected{% endif %}>create time asc</option>
+            <option value="ctdec" {% if time == 'ctdec' %}selected{% endif %}>create time dec</option>
+            <option value="mtasc" {% if time == 'mtasc' %}selected{% endif %}>modified time asc</option>
+            <option value="mtdec" {% if time == 'mtdec' %}selected{% endif %}>modified time dec</option>
+        </select>
+        <br><br>
+
+    <button type="submit"> Query </button>
+</form>
+
+{% block content %}
+{% if list %}
+<!-- Creating a table that houses all of the firmware that is queried. -->
+    <table>
+        <thead>
+            <tr>
+                <!-- Headers for each category -->
+                <th>ID</th>
+                <th>Model</th>
+                <th>Type</th>
+                <th>Platform</th>
+                <th>Created Time</th>
+                <th>Modified Time</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- body of table, this is a loop of the list of lists that store the values of the queried firmwares. -->
+            {% for item in list %}
+            <tr>
+                <form action="/selectApp/query/delete/" method="POST">
+                    {% csrf_token %}
+                    {% for doc in item %}
+                    <td>{{ doc }}</td>
+                    <input type="hidden" name="item_data" value="{{ item }}">
+                    {% endfor %}
+                    <!-- Add Delete button -->
+                    <td><button class="delete-button">Delete</button></td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No Firmware Selected...</p>
+{% endif %}
+{% endblock %}
+
+<!-- Pop ups -->
+{% if no_input %}
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" id="close-popup">&times;</span>
+            <h3>{{ no_input }}</h3>
+        </div>
+    </div>
+
+    <script src="{% static 'selectApp/script.js' %}"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById('popup').style.display = 'block';
+        }
+    </script>
+</body>
+{% endif %}
+{% if success %}
+<body>
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close" id="close-popup">&times;</span>
+            <h3>{{ success }}</h3>
+        </div>
+    </div>
+
+    <script src="{% static 'selectApp/script.js' %}"></script>
+    <script>
+        window.onload = function() {
+            document.getElementById('popup').style.display = 'block';
+        }
+    </script>
+</body>
+{% endif %}
