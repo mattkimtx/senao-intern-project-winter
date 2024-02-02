@@ -55,17 +55,22 @@ $ python manage.py runserver <your_desired_port>
 #### Usage: Login and Create Account
 To use the querying feature, the user must login or create an account. This project uses an account creation and verification API.
 
-#### Login/Verify Account
+#### Login/Verify Account (./api_account_password)
 The user must only input uppercase and lowercase letters and numbers for the `username` and `password` fields. The `username` and `password` fields also require a minimum length of three and eight characters respectively. If the user fails to type in the correct password five times, the user will be unable to login for one minute, and the API will return an appropriate status code through HTTP.
+
+The login session data is also tracked within my code where I attach a cookie holding a `session_token` which is a 16 byte hexadecimal string (`secrets.token_hex(16)`). This cookie then gets stored into the MongoDB `users` database and inserted into the document that hold's the user's login information. When the user clicks logout, the `session_token` is then removed from the user's document.
 
 #### Creating Account
 Like logging in, the user must only input uppercase and lowercase letters and numbers for the `username` and `password` fields. The `username` and `password` fields also require a minimum length of three and eight characters respectively, and they both have a maximum length of 32 characters. The `password` has an additonal requirement where it must contain at least one uppercase letter, one lowercase letter, and one number. If any of these requirements are not met, the user will have to try again.
 
-#### User Authentication Backend
-This web application also implements a user authentication API with a MongoDB backend and uses Django's authentication API `django.contrib.auth`. When first opening the site at `localhost`, `http://127.0.0.1:8000`, or an additional chosen address, the user will be directed the login page. In `settings.py`, I have edited the default session expiry settings to `SESSION_EXPIRE_AT_BROWSER_CLOSE = True` and `SESSION_COOKIE_AGE = 300` (the user's session will expire after closing the webpage or being inactive for 5 minutes). This application requires logging in to access the querying webpage by using the `@login_requred` decorator on the querying views. 
+#### User Authentication Backend (./account/backend.py)
+This web application also implements a user authentication API with a MongoDB backend and uses Django's authentication API `django.contrib.auth`. When first opening the site at `localhost`, `http://127.0.0.1:8000`, or an additional chosen address, the user will be directed the login page. I have created an extra python file (`backend.py`) with the `MyBackend` class and an `authenticate` method. This method calls methods in `mongo.py` to verify the account information. The `authenticate` method is called within `act_pw_api.py`.
 
 #### Query: Input/Output Format
 The model string textbox input must be a string, and the user can select any item from the selecting type or sorting by time dropdown boxes.
+
+#### MongoDB: Indexes
+Although it is not visible in the code, I have set up indexes in MongoDB to optimize querying speeds for larger volumes of data. This will be particularly helpful for expanding the website to potentially thousands of users and potentially even more firmware data. I created an index for each firmware model and for each user's username. I have also added a TTL index for the `failed_login` database because I do not want to store every single failed_login. This strategy also helps tracking failed logins and user information because it will automatically return how many documents there are within X seconds rather than my current strategy of counting the last 5 failed tries and calculating how recent they are.
 
 ## Assumptions
 - When decided to choose a new `is_previous` firmware version, we assume that we used the most recent firmware version. For example, if we were removing firmware version `v1.1`, we would find the closest previous version, `v1.0`, the new `is_previous` rather than another version such as `v0.5`.
@@ -74,4 +79,7 @@ The model string textbox input must be a string, and the user can select any ite
 The output will be organized into seven columns where the first six columns represent fields, and each row represents one document. The last column contains the delete button for the document. If the user deletes a document, the page will refresh and display the remaining firmware versions of the same `model` name, and if there are no other matching `model` names remaining, there will be no output.
 
 ## Potential Improvements
-In my code, there are a lot of opportunities for more clear variable naming and more clear coding overall. I think my selectApp/views.py represents what I want my code to look like, but the reality is represented in selectapp/query_edit.py. There, my query_sort and query_delete  has a lot of `if statements that I can turn into separate smaller functions. 
+In my code, there are a lot of opportunities for more clear variable naming and more clear coding overall. I think my selectApp/views.py represents what I want my code to look like, but the reality is represented in selectapp/query_edit.py. There, my query_sort and query_delete has a lot of `if statements that I can turn into separate smaller functions.
+
+#### Improvement with login
+When logging in, I create a session token by creating a 16 byte hex string and store it in the account database in MongoDB. While this conveniently combines tracking login data with user information, it does not protect against a user closing the webpage and then reopening it later (or potentially a lot later). If I had more time, I would adapt my MongoDB storing failed logins to store all login information there and add an index with a TTL that automatically deletes a user's session after X amount of seconds (probably 3600 for 1 hour).
